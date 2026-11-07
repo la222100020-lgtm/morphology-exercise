@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morphology Builder</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    color:#1f4e79;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+.bank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:30px;
+}
+
+.card{
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:grab;
+    color:white;
+    font-weight:bold;
+    user-select:none;
+}
+
+.prefix{background:#1976d2;}
+.root{background:#388e3c;}
+.suffix{background:#d32f2f;}
+
+.builder{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.slot{
+    width:180px;
+    min-height:70px;
+    border:3px dashed #999;
+    border-radius:10px;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.output{
+    text-align:center;
+    margin-top:20px;
+}
+
+#wordDisplay{
+    font-size:32px;
+    font-weight:bold;
+    color:#1f4e79;
+}
+
+button{
+    padding:10px 20px;
+    margin:10px;
+    border:none;
+    border-radius:6px;
+    background:#1f4e79;
+    color:white;
+    cursor:pointer;
+}
+
+.feedback{
+    font-size:22px;
+    margin-top:15px;
+}
+
+.success{
+    color:green;
+}
+
+.fail{
+    color:red;
+}
+
+.score{
+    text-align:center;
+    margin-top:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Morphology Builder</h1>
+
+<h3>Drag morphemes into the slots and build a valid English word.</h3>
+
+<div class="bank">
+
+<div class="card prefix" draggable="true">un</div>
+<div class="card prefix" draggable="true">re</div>
+<div class="card prefix" draggable="true">dis</div>
+<div class="card prefix" draggable="true">inter</div>
+<div class="card prefix" draggable="true">micro</div>
+
+<div class="card root" draggable="true">predict</div>
+<div class="card root" draggable="true">construct</div>
+<div class="card root" draggable="true">agree</div>
+<div class="card root" draggable="true">connect</div>
+<div class="card root" draggable="true">analyze</div>
+<div class="card root" draggable="true">form</div>
+<div class="card root" draggable="true">act</div>
+<div class="card root" draggable="true">organize</div>
+
+<div class="card suffix" draggable="true">able</div>
+<div class="card suffix" draggable="true">ion</div>
+<div class="card suffix" draggable="true">ment</div>
+<div class="card suffix" draggable="true">ity</div>
+<div class="card suffix" draggable="true">er</div>
+<div class="card suffix" draggable="true">ation</div>
+
+</div>
+
+<div class="builder">
+<div class="slot" id="prefixSlot">Prefix</div>
+<div class="slot" id="rootSlot">Root</div>
+<div class="slot" id="suffixSlot">Suffix</div>
+</div>
+
+<div class="output">
+<div id="wordDisplay">---</div>
+
+<button onclick="checkWord()">Check Word</button>
+<button onclick="resetBuilder()">Reset</button>
+
+<div id="feedback" class="feedback"></div>
+</div>
+
+<div class="score">
+Score: <span id="score">0</span>
+</div>
+
+</div>
+
+<script>
+
+let draggedText = "";
+let score = 0;
+
+const validWords = [
+"unpredictable",
+"reconstruction",
+"disagreement",
+"interconnection",
+"microanalysis",
+"reorganization",
+"formation",
+"actor",
+"activity",
+"constructer",
+"agreement",
+"connector",
+"analyzer",
+"organization",
+"interaction",
+"reactivation",
+"interactivity",
+"microconnector",
+"reformulation",
+"disconnection"
+];
+
+document.querySelectorAll(".card").forEach(card=>{
+card.addEventListener("dragstart",()=>{
+draggedText = card.textContent;
+});
+});
+
+document.querySelectorAll(".slot").forEach(slot=>{
+
+slot.addEventListener("dragover",e=>{
+e.preventDefault();
+});
+
+slot.addEventListener("drop",()=>{
+slot.textContent = draggedText;
+updateWord();
+});
+});
+
+function updateWord(){
+
+const p = document.getElementById("prefixSlot").textContent;
+const r = document.getElementById("rootSlot").textContent;
+const s = document.getElementById("suffixSlot").textContent;
+
+const cleanP = p==="Prefix"?"":p;
+const cleanR = r==="Root"?"":r;
+const cleanS = s==="Suffix"?"":s;
+
+document.getElementById("wordDisplay").textContent =
+cleanP + cleanR + cleanS;
+}
+
+function checkWord(){
+
+const word =
+document.getElementById("wordDisplay")
+.textContent
+.toLowerCase();
+
+const feedback =
+document.getElementById("feedback");
+
+if(validWords.includes(word)){
+
+feedback.innerHTML =
+"✅ Valid English word";
+
+feedback.className =
+"feedback success";
+
+score++;
+document.getElementById("score")
+.textContent = score;
+
+}else{
+
+feedback.innerHTML =
+"❌ Not in the approved word list";
+
+feedback.className =
+"feedback fail";
+}
+}
+
+function resetBuilder(){
+
+document.getElementById("prefixSlot")
+.textContent = "Prefix";
+
+document.getElementById("rootSlot")
+.textContent = "Root";
+
+document.getElementById("suffixSlot")
+.textContent = "Suffix";
+
+document.getElementById("wordDisplay")
+.textContent = "---";
+
+document.getElementById("feedback")
+.innerHTML = "";
+}
+</script>
+
+</body>
+</html>
